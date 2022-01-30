@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devstart": "nodemon ./app.js"
+    "devstart": "nodemon ./app.js",
+    "serverstart": "DEBUG=express-locallibrary-tutorial:* npm run devstart"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
+    "jade": "^1.11.0",
     "mongoose": "^6.1.8",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",

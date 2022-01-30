@@ -3,11 +3,10 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
-const bcrypt = require("bcryptjs");
 require('dotenv').config();
+const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
-const { nextTick } = require("process");
 const Schema = mongoose.Schema;
 
 const mongoDb = process.env.DB_HOST;
@@ -24,17 +23,60 @@ const User = mongoose.model(
     })
 );
 
+//LocalStrategy take function as argument
+passport.use(
+    new LocalStrategy((username, password, done) => {
+      User.findOne({ username: username }, (err, user) => {
+        if (err) { 
+          return done(err);
+        }
+        if (!user) {
+          return done(null, false, { message: "Incorrect username" });
+        }
+        bcrypt.compare(password, user.password, (err, res) => {
+            if (res) {
+              // passwords match! log user in
+              return done(null, user)
+            } else {
+              // passwords do not match!
+              return done(null, false, { message: "Incorrect password" })
+            }
+        })
+        return done(null, user);
+      });
+    })
+);
+
+// get ID from user information
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+});
+
+// get id by using user information
+passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
 const app = express();
 app.set("views", __dirname);
-app.set("view engine", "ejs");
+app.set("view engine", "jade");
 
 app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
+
+app.use(function(req, res, next) {
+    res.locals.currentUser = req.user;
+    next();
+});
+
+
 app.get("/", (req, res) => {
-    res.render("./views/index");
+    res.render("./views/index", { user: req.user });
 });
 
 app.get("/signup", (req, res) => {
@@ -42,21 +84,37 @@ app.get("/signup", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    res.render("./views/log-in-form.ejs");
+    res.render("./views/log-in-form");
 });
+
+app.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/");
+});
+
+app.post("/login",
+    passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login'
+    })
+);
 
 // handle signup form post data
 app.post('/signup',(req,res,next)=>{
+    // if password match with confirmed password
     if(req.body.password===req.body.confirm_password){
+        // ecrypt the user password with bcrypt
         bcrypt.hash(req.body.password,10,(err,hashedPassword)=>{
             if(err){
                 return next(err)
             }
+            // save username and hashed password into DB
             const user = new User({
                 username: req.body.username,
                 password: hashedPassword,
             }).save(err=>{
                 if(err){return next(err)}
+                // return to home page after success
                 res.redirect('/')
             })
         })

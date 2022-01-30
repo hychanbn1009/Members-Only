@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    h1 Sign Up
+    p
+        | Already registered? 
+        a(href='/') Log In
+    form(action='' method='POST')
+        label(for='username') Username
+        br
+        input(name='username' placeholder='Username' type='text')
+        br
+        label(for='password') Password
+        br
+        input(name='password' placeholder='Password' type='password')
+        br
+        label(for='confirm_password') Confirmed Password
+        br
+        input(name='confirm_password' placeholder='Confirmed Password' type='password')
+        br
+        button Sign Up
