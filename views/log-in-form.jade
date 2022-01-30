@@ -1,15 +1,15 @@
 extends layout
 
 block content
-
-    h1 Log In
-    form(action='' method='POST')
-        label(for='username') Username
-        br
-        input(name='username' placeholder='Username' type='text')
-        br
-        label(for='password') Password
-        br
-        input(name='password' placeholder='Password' type='password')
-        br
-        button Log In
+    div(class='container')
+        h1 Log In
+        form(action='' method='POST')
+            label(for='username') Username
+            br
+            input(name='username' placeholder='Username' type='text')
+            br
+            label(for='password') Password
+            br
+            input(name='password' placeholder='Password' type='password')
+            br
+            button Log In

@@ -18,10 +18,14 @@ html
           span(class='navbar-toggler-icon')
         div(class="collapse navbar-collapse" id="navbarNav")
           ul(class='navbar-nav')
-            li(class="nav-item")
-              a(class="nav-link active" aria-current="page" href="/login") Log In
-            li(class="nav-item")
-              a(class="nav-link active" aria-current="page" href="/signup") Sign Up
-            li(class="nav-item")
-              a(class="nav-link active" aria-current="page" href="/logout") Log Out
+            if !user
+                li(class="nav-item")
+                a(class="nav-link active" aria-current="page" href="/login") Log In
+                li(class="nav-item")
+                a(class="nav-link active" aria-current="page" href="/signup") Sign Up
+            if user
+                li(class="nav-item")
+                a(class="nav-link active" aria-current="page" href="/post") Write Post
+                li(class="nav-item")
+                a(class="nav-link active" aria-current="page" href="/logout") Log Out
     block content

@@ -92,6 +92,10 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
+app.get("/post", (req, res) => {
+    res.render("./views/post-form");
+});
+
 app.post("/login",
     passport.authenticate('local', {
         successRedirect: '/',
