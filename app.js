@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
+const async = require('async');
+var moment = require('moment');
 require('dotenv').config();
 const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
@@ -31,7 +33,8 @@ const Post = mongoose.model(
         title: { type: String, required: true },
         message: { type: String, required: true },
         timestamp: {type: Date, default: Date.now},
-        author: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true}
+        author_name: {type: String, required:true},
+        author_id: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
     })
 );
 
@@ -87,9 +90,25 @@ app.use(function(req, res, next) {
     next();
 });
 
-
 app.get("/", (req, res) => {
-    res.render("./views/index", { user: req.user });
+    async.parallel({
+        post: function(callback){
+            Post.find()
+            .populate('title')
+            .populate('message')
+            .populate('author_name')
+            .populate('timestamp')
+            .exec(callback);
+        },
+    },function(err,results){
+        if(err){return next(err);}
+        if(results===null){
+            const err=new Error('Post not found');
+            err.status=404;
+            return next(err)
+        }
+        res.render("./views/index", {user: req.user,post_list:results.post, moment: moment});
+    })
 });
 
 app.get("/signup", (req, res) => {
@@ -106,7 +125,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/post", (req, res) => {
-    res.render("./views/post-form");
+    res.render("./views/post-form",{ user: req.user});
 });
 
 app.post("/login",
@@ -145,7 +164,8 @@ app.post('/post',(req,res,next)=>{
     const post = new Post({
         title: req.body.title,
         message: req.body.message,
-        author: req.user._id,
+        author_name: req.user.username,
+        author_id: req.user._id,
     }).save(err=>{
         if(err){return next(err)}
         res.redirect('/')

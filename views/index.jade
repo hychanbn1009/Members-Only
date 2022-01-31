@@ -3,6 +3,11 @@ extends layout
 block content
     div(class='container')
         if user 
-            p You are logged in
+            each post in post_list
+                p #{post.title}
+                p #{post.message}
+                p #{post.author_name}
+                p #{moment(post.timestamp).format('MM/DD/YYYY')}
+                hr
         else
             p You are not member
