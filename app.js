@@ -14,6 +14,7 @@ mongoose.connect(mongoDb, { useUnifiedTopology: true, useNewUrlParser: true });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo connection error"));
 
+// Set up user Schema
 const User = mongoose.model(
     "User",
     new Schema({
@@ -23,7 +24,19 @@ const User = mongoose.model(
     })
 );
 
-//LocalStrategy take function as argument
+// Set up post Schema
+const Post = mongoose.model(
+    "Post",
+    new Schema({
+        title: { type: String, required: true },
+        message: { type: String, required: true },
+        timestamp: {type: Date, default: Date.now},
+        author: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true}
+    })
+);
+
+
+// LocalStrategy take function as argument
 passport.use(
     new LocalStrategy((username, password, done) => {
       User.findOne({ username: username }, (err, user) => {
@@ -125,6 +138,19 @@ app.post('/signup',(req,res,next)=>{
     }
 })
 
+
+//handle post submit form post data
+app.post('/post',(req,res,next)=>{
+    console.log(req.user)
+    const post = new Post({
+        title: req.body.title,
+        message: req.body.message,
+        author: req.user._id,
+    }).save(err=>{
+        if(err){return next(err)}
+        res.redirect('/')
+    })
+})
 
 
 app.listen(3000, () => console.log("app listening on port 3000!"));
