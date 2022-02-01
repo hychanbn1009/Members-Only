@@ -2,28 +2,33 @@ extends layout
 
 block content
     div(class='container')
-        p #{message}
-            if post_list
-                each post in post_list
-                    div(class='card' style="width: 18rem;")
-                        ul(class="list-group list-group-flush")
-                            li(class="list-group-item")
-                                h3 #{post.title}
-                                p #{post.message}
-                        div(class='card-footer')
-                            if user
-                                if user.membership
-                                    span Author: #{post.author_name}
-                                    span Date: #{moment(post.timestamp).format('MM/DD/YYYY')}
-                                    if user.admin 
-                                        a(class="btn btn-danger" href='/delete/'+post._id) Delete
-                                else
-                                    span Author: Anonymous
-                                    span Date: N/A
-                            else
-                                span Author: Anonymous
-                                span Date: N/A
-            else 
-                h1 Oh! No Post!
+        div(class='row justify-content-center')
+            div(class='col-9 ')
+                p #{message}
+                    if post_list.length
+                        each post in post_list
+                            div(class='card')
+                                div(class="card-body")
+                                    h5(class="card-title") #{post.title}
+                                    if user 
+                                        if user.membership 
+                                            h6(class="card-subtitle mb-2 text-muted") Author: #{post.author_name}
+                                        else 
+                                            h6(class="card-subtitle mb-2 text-muted") Author: Anonymous
+                                    else 
+                                        h6(class="card-subtitle mb-2 text-muted") Author: Anonymous
+                                    p #{post.message}
+                                div(class='card-footer d-flex flex-row')
+                                    if user
+                                        if user.membership
+                                            small(class='text-muted') Date: #{moment(post.timestamp).format('MM/DD/YYYY')}
+                                            if user.admin 
+                                                a(class="btn btn-danger ms-auto btn-sm" href='/delete/'+post._id) Delete
+                                        else 
+                                            small(class='text-muted') Date: N/A
+                                    else 
+                                        small(class='text-muted') Date: N/A
+                    else 
+                        h1 Oh! No Post!
                         
                         

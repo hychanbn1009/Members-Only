@@ -137,8 +137,11 @@ app.get("/admin", (req, res) => {
     res.render("./views/update-admin",{ user: req.user});
 });
 
-app.get("/delete/:id",(req,res)=>{
-    res.render("./views/delete")
+app.get("/delete/:id",(req,res,next)=>{
+    Post.findById(req.params.id).exec(function(err,post){
+        if(err){return next(err)}
+        res.render("./views/delete",{post:post,moment:moment})
+    })
 })
 
 app.post("/login",
@@ -210,6 +213,13 @@ app.post('/admin',(req,res,next)=>{
             res.redirect('/')
         })
     }
+})
+
+app.post('/delete/:id',(req,res,next)=>{
+    Post.findByIdAndRemove(req.params.id,function(err){
+        if (err) { return next(err); }
+        res.redirect('/')
+    })
 })
 
 app.listen(3000, () => console.log("app listening on port 3000!"));
