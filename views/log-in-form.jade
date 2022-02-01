@@ -4,12 +4,10 @@ block content
     div(class='container')
         h1 Log In
         form(action='' method='POST')
-            label(for='username') Username
-            br
-            input(name='username' placeholder='Username' type='text')
-            br
-            label(for='password') Password
-            br
-            input(name='password' placeholder='Password' type='password')
-            br
-            button Log In
+            div(class='mb-3')
+                label(for='username' class="form-label") Username
+                input(class="form-control" name='username' placeholder='Username' type='text' required)
+            div(class='mb-3')
+                label(for='password' class="form-label") Password
+                input(class="form-control" name='password' placeholder='Password' type='password' required)
+            button(type="submit" class="btn btn-primary") Log In

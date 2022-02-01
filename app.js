@@ -9,6 +9,7 @@ require('dotenv').config();
 const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
+const { body } = require("express-validator");
 const Schema = mongoose.Schema;
 
 const mongoDb = process.env.DB_HOST;
@@ -22,7 +23,8 @@ const User = mongoose.model(
     new Schema({
         username: { type: String, required: true },
         password: { type: String, required: true },
-        membership: {type: Boolean, default: false}
+        membership: {type: Boolean, default: false},
+        admin: {type: Boolean, default: false}
     })
 );
 
@@ -47,7 +49,7 @@ passport.use(
           return done(err);
         }
         if (!user) {
-          return done(null, false, { message: "Incorrect username" });
+          return done(null, false);
         }
         bcrypt.compare(password, user.password, (err, res) => {
             if (res) {
@@ -55,10 +57,9 @@ passport.use(
               return done(null, user)
             } else {
               // passwords do not match!
-              return done(null, false, { message: "Incorrect password" })
+              return done(null, false)
             }
         })
-        return done(null, user);
       });
     })
 );
@@ -119,6 +120,10 @@ app.get("/login", (req, res) => {
     res.render("./views/log-in-form");
 });
 
+app.get("/join", (req, res) => {
+    res.render("./views/update-membership",{user: req.user});
+});
+
 app.get("/logout", (req, res) => {
     req.logout();
     res.redirect("/");
@@ -127,6 +132,14 @@ app.get("/logout", (req, res) => {
 app.get("/post", (req, res) => {
     res.render("./views/post-form",{ user: req.user});
 });
+
+app.get("/admin", (req, res) => {
+    res.render("./views/update-admin",{ user: req.user});
+});
+
+app.get("/delete/:id",(req,res)=>{
+    res.render("./views/delete")
+})
 
 app.post("/login",
     passport.authenticate('local', {
@@ -137,30 +150,39 @@ app.post("/login",
 
 // handle signup form post data
 app.post('/signup',(req,res,next)=>{
+    body('username').trim().isLength({ min: 1 }).escape().withMessage('Username must be specified.')
     // if password match with confirmed password
-    if(req.body.password===req.body.confirm_password){
-        // ecrypt the user password with bcrypt
-        bcrypt.hash(req.body.password,10,(err,hashedPassword)=>{
-            if(err){
-                return next(err)
+    User.countDocuments({username:req.body.username},function(err,count){
+        if(count>0){
+            res.render("./views/sign-up-form", {message: 'Username used by someone'});
+        }
+        else{
+            if(req.body.password===req.body.confirm_password){
+                // ecrypt the user password with bcrypt
+                bcrypt.hash(req.body.password,10,(err,hashedPassword)=>{
+                    if(err){
+                        return next(err)
+                    }
+                    // save username and hashed password into DB
+                    const user = new User({
+                        username: req.body.username,
+                        password: hashedPassword,
+                    }).save(err=>{
+                        if(err){return next(err)}
+                        // return to home page after success
+                        res.render('./views/index', {message:'Welcome! Your account has been created'})
+                    })
+                })
+            }else{
+                res.render("./views/sign-up-form", {message: 'Password not matched'});
             }
-            // save username and hashed password into DB
-            const user = new User({
-                username: req.body.username,
-                password: hashedPassword,
-            }).save(err=>{
-                if(err){return next(err)}
-                // return to home page after success
-                res.redirect('/')
-            })
-        })
-    }
+        }
+    })
 })
 
 
 //handle post submit form post data
 app.post('/post',(req,res,next)=>{
-    console.log(req.user)
     const post = new Post({
         title: req.body.title,
         message: req.body.message,
@@ -172,5 +194,22 @@ app.post('/post',(req,res,next)=>{
     })
 })
 
+app.post('/join',(req,res,next)=>{
+    if (req.body.passcode===process.env.PASSCODE){
+        User.findByIdAndUpdate(req.user._id,{membership:true},function(err,result){
+            if (err) { return next(err); }
+            res.redirect('/')
+        })
+    }
+})
+
+app.post('/admin',(req,res,next)=>{
+    if (req.body.admin_code===process.env.ADMINCODE){
+        User.findByIdAndUpdate(req.user._id,{admin:true, membership:true},function(err,result){
+            if (err) { return next(err); }
+            res.redirect('/')
+        })
+    }
+})
 
 app.listen(3000, () => console.log("app listening on port 3000!"));

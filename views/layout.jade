@@ -12,12 +12,14 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     nav(class="navbar navbar-expand-lg navbar-light bg-light")
-      div(class='container-fluid')
+      div(class='container')
         a(class="navbar-brand" href='/') Members Only
         button(class="navbar-toggler"  type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation")
           span(class='navbar-toggler-icon')
         div(class="collapse navbar-collapse" id="navbarNav")
-          ul(class='navbar-nav')
+          ul(class='navbar-nav ms-auto')
+            li(class="nav-item")
+                a(class="nav-link active" aria-current="page" href="/") Home
             if !user
                 li(class="nav-item")
                 a(class="nav-link active" aria-current="page" href="/login") Log In
@@ -26,6 +28,12 @@ html
             if user
                 li(class="nav-item")
                 a(class="nav-link active" aria-current="page" href="/post") Write Post
+                if !user.membership
+                    li(class="nav-item")
+                    a(class="nav-link active" aria-current="page" href="/join") Join Member
+                if !user.admin
+                    li(class="nav-item")
+                    a(class="nav-link active" aria-current="page" href="/admin") Admin
                 li(class="nav-item")
                 a(class="nav-link active" aria-current="page" href="/logout") Log Out
     block content

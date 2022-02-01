@@ -7,16 +7,14 @@ block content
             | Already registered? 
             a(href='/') Log In
         form(action='' method='POST')
-            label(for='username') Username
-            br
-            input(name='username' placeholder='Username' type='text')
-            br
-            label(for='password') Password
-            br
-            input(name='password' placeholder='Password' type='password')
-            br
-            label(for='confirm_password') Confirmed Password
-            br
-            input(name='confirm_password' placeholder='Confirmed Password' type='password')
-            br
-            button Sign Up
+            div(class='mb-3')
+                label(for='username' class="form-label") Username
+                input(name='username' placeholder='Username' type='text' class="form-control" required)
+            div(class='mb-3')
+                label(for='password' class="form-label") Password
+                input(name='password' placeholder='Password' type='password' class="form-control" required)
+            div(class='mb-3')
+                label(for='confirm_password' class="form-label") Confirm Password
+                input(name='confirm_password' placeholder='Confirmed Password' type='password' class="form-control" required)
+            p(id='error_message') #{message}
+            button(type="submit" class="btn btn-primary") Sign Up

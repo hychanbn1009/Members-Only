@@ -2,12 +2,28 @@ extends layout
 
 block content
     div(class='container')
-        if user 
-            each post in post_list
-                p #{post.title}
-                p #{post.message}
-                p #{post.author_name}
-                p #{moment(post.timestamp).format('MM/DD/YYYY')}
-                hr
-        else
-            p You are not member
+        p #{message}
+            if post_list
+                each post in post_list
+                    div(class='card' style="width: 18rem;")
+                        ul(class="list-group list-group-flush")
+                            li(class="list-group-item")
+                                h3 #{post.title}
+                                p #{post.message}
+                        div(class='card-footer')
+                            if user
+                                if user.membership
+                                    span Author: #{post.author_name}
+                                    span Date: #{moment(post.timestamp).format('MM/DD/YYYY')}
+                                    if user.admin 
+                                        a(class="btn btn-danger" href='/delete/'+post._id) Delete
+                                else
+                                    span Author: Anonymous
+                                    span Date: N/A
+                            else
+                                span Author: Anonymous
+                                span Date: N/A
+            else 
+                h1 Oh! No Post!
+                        
+                        

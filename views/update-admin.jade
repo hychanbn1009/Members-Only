@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    div(class='container')
+        h1 Admin Code
+        form(action='' method='POST')
+            label(for='admin_code' class="form-label") Admin Passcode
+            input(name='admin_code' placeholder='Admin Passcode' type='text' class="form-control" required)
+            button(type="submit" class="btn btn-primary")  Join
