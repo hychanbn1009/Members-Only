@@ -2,12 +2,17 @@ extends layout
 
 block content
     div(class='container')
-        h1 Log In
-        form(action='' method='POST')
-            div(class='mb-3')
-                label(for='username' class="form-label") Username
-                input(class="form-control" name='username' placeholder='Username' type='text' required)
-            div(class='mb-3')
-                label(for='password' class="form-label") Password
-                input(class="form-control" name='password' placeholder='Password' type='password' required)
-            button(type="submit" class="btn btn-primary") Log In
+        div(class='row justify-content-center')
+            div(class='col-12 col-md-9')
+                div(class='card mt-4')
+                    div(class='card-body')
+                        h3(class='card-title') Log In
+                        p #{message}
+                        form(action='' method='POST')
+                            div(class='mb-3')
+                                label(for='username' class="form-label") Username
+                                input(class="form-control" name='username' placeholder='Username' type='text' required)
+                            div(class='mb-3')
+                                label(for='password' class="form-label") Password
+                                input(class="form-control" name='password' placeholder='Password' type='password' required)
+                            button(type="submit" class="btn btn-primary") Log In

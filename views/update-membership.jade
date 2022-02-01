@@ -2,8 +2,12 @@ extends layout
 
 block content
     div(class='container')
-        h1 Join the Club
-        form(action='' method='POST')
-            label(for='passcode' class="form-label") Secret Passcode
-            input(name='passcode' placeholder='Secret Passcode' type='text' class="form-control" required)
-            button(type="submit" class="btn btn-primary")  Join
+        div(class='row justify-content-center')
+            div(class='col-12 col-md-9')
+                div(class='card mt-4')
+                    div(class='card-body')
+                        h1 Join the Club
+                        form(action='' method='POST')
+                            label(for='passcode' class="form-label") Secret Passcode
+                            input(name='passcode' placeholder='Secret Passcode' type='text' class="form-control" required)
+                            button(type="submit" class="btn btn-primary")  Join

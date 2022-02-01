@@ -4,7 +4,7 @@ const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
 const async = require('async');
-var moment = require('moment');
+const moment = require('moment');
 require('dotenv').config();
 const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
@@ -49,7 +49,7 @@ passport.use(
           return done(err);
         }
         if (!user) {
-          return done(null, false);
+          return done(null, false, { message: "Incorrect username" });
         }
         bcrypt.compare(password, user.password, (err, res) => {
             if (res) {
@@ -57,7 +57,7 @@ passport.use(
               return done(null, user)
             } else {
               // passwords do not match!
-              return done(null, false)
+              return done(null, false, { message: "Incorrect password" })
             }
         })
       });
@@ -79,7 +79,6 @@ passport.deserializeUser(function(id, done) {
 const app = express();
 app.set("views", __dirname);
 app.set("view engine", "jade");
-
 app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -147,7 +146,7 @@ app.get("/delete/:id",(req,res,next)=>{
 app.post("/login",
     passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/login'
+        failureRedirect: '/login',
     })
 );
 

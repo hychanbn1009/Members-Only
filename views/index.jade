@@ -3,11 +3,11 @@ extends layout
 block content
     div(class='container')
         div(class='row justify-content-center')
-            div(class='col-9 ')
+            div(class='col-12 col-md-9')
                 p #{message}
                     if post_list.length
                         each post in post_list
-                            div(class='card')
+                            div(class='card mt-4')
                                 div(class="card-body")
                                     h5(class="card-title") #{post.title}
                                     if user 
