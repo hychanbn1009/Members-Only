@@ -11,6 +11,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
 const { body } = require("express-validator");
 const Schema = mongoose.Schema;
+const PORT = process.env.PORT || 5000;
 
 const mongoDb = process.env.DB_HOST;
 mongoose.connect(mongoDb, { useUnifiedTopology: true, useNewUrlParser: true });
@@ -243,4 +244,4 @@ app.post('/delete/:id',(req,res,next)=>{
     })
 })
 
-app.listen(3000, () => console.log("app listening on port 3000!"));
+app.listen(PORT, () => console.log(`app listening on port ${ PORT }!`));
