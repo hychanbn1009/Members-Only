@@ -7,6 +7,7 @@ block content
                 div(class='card mt-4')
                     div(class='card-body')
                         h1 Join the Club
+                        p(class='text-danger') #{message}
                         form(action='' method='POST')
                             label(for='passcode' class="form-label") Secret Passcode
                             input(name='passcode' placeholder='Secret Passcode' type='text' class="form-control" required)

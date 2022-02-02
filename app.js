@@ -153,6 +153,7 @@ app.post("/login",
 // handle signup form post data
 app.post('/signup',(req,res,next)=>{
     body('username').trim().isLength({ min: 1 }).escape().withMessage('Username must be specified.')
+    body('password').trim().isLength({ min: 6 }).escape().withMessage('Password must have 6 characters.')
     // if password match with confirmed password
     User.countDocuments({username:req.body.username},function(err,count){
         if(count>0){
@@ -172,7 +173,24 @@ app.post('/signup',(req,res,next)=>{
                     }).save(err=>{
                         if(err){return next(err)}
                         // return to home page after success
-                        res.render('./views/index', {message:'Welcome! Your account has been created'})
+                        async.parallel({
+                            post: function(callback){
+                                Post.find()
+                                .populate('title')
+                                .populate('message')
+                                .populate('author_name')
+                                .populate('timestamp')
+                                .exec(callback);
+                            },
+                        },function(err,results){
+                            if(err){return next(err);}
+                            if(results===null){
+                                const err=new Error('Post not found');
+                                err.status=404;
+                                return next(err)
+                            }
+                            res.render("./views/index", {user: req.user,post_list:results.post,message:'Welcome! Your account has been created', moment: moment});
+                        })
                     })
                 })
             }else{
@@ -202,6 +220,8 @@ app.post('/join',(req,res,next)=>{
             if (err) { return next(err); }
             res.redirect('/')
         })
+    }else{
+        res.render("./views/update-membership", {message: 'Member Code is wrong',user: req.user});
     }
 })
 
@@ -211,6 +231,8 @@ app.post('/admin',(req,res,next)=>{
             if (err) { return next(err); }
             res.redirect('/')
         })
+    }else{
+        res.render("./views/update-admin", {message: 'Admin Code is wrong',user: req.user});
     }
 })
 

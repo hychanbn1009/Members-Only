@@ -9,16 +9,17 @@ block content
                         h1 Sign Up
                         p
                             | Already registered? 
-                            a(href='/') Log In
+                            a(href='/login') Log In
                         form(action='' method='POST')
                             div(class='mb-3')
                                 label(for='username' class="form-label") Username
                                 input(name='username' placeholder='Username' type='text' class="form-control" required)
                             div(class='mb-3')
                                 label(for='password' class="form-label") Password
-                                input(name='password' placeholder='Password' type='password' class="form-control" required)
+                                input(name='password' placeholder='Password' type='password' class="form-control" pattern=".{6,}" required)
+                                small(id="passwordHelpBlock" class="form-text text-muted") Your password must have at least 6 characters long
                             div(class='mb-3')
                                 label(for='confirm_password' class="form-label") Confirm Password
-                                input(name='confirm_password' placeholder='Confirmed Password' type='password' class="form-control" required)
-                            p(id='error_message') #{message}
+                                input(name='confirm_password' placeholder='Confirmed Password' type='password' class="form-control" pattern=".{6,}" required)
+                            p(id='error_message' class='text-danger') #{message}
                             button(type="submit" class="btn btn-primary") Sign Up
