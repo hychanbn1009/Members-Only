@@ -144,12 +144,29 @@ app.get("/delete/:id",(req,res,next)=>{
     })
 })
 
-app.post("/login",
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/login',
-    })
-);
+// app.post("/login",
+//     passport.authenticate('local', {
+//         successRedirect: '/',
+//         failureRedirect: '/login',
+//     })
+// );
+
+app.post('/login', function(req, res, next) {
+    passport.authenticate('local', function(err, user, info) {
+      if (err) {
+        return next(err); // will generate a 500 error
+      }
+      if (! user) {
+        return res.render("./views/log-in-form",{ message: "Incorrect username/password"});
+      }
+      req.login(user, loginErr => {
+        if (loginErr) {
+          return next(loginErr);
+        }
+        return res.redirect('/')
+      });      
+    })(req, res, next);
+});
 
 // handle signup form post data
 app.post('/signup',(req,res,next)=>{
